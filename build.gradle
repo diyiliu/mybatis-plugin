@@ -1,0 +1,70 @@
+group 'com.diyiliu'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'idea'
+
+compileJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+compileTestJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+repositories {
+    //本地仓库中心
+    mavenLocal()
+    //公共仓库
+    maven {
+        url "http://192.168.0.191:9080/repository/maven-central/"
+    }
+}
+
+ext {
+    springVersion = '4.2.4.RELEASE'
+    mybatisVersion = '3.3.0'
+    mybatisSpringVersion = '1.2.3'
+    druidVersion = '1.0.16'
+    mysqlConnectorVersion = '5.1.38'
+    aspectjVersion = '1.8.8'
+    logbackVersion = '1.1.3'
+    jpaVersion = '1.0.2'
+    commonsLang3Version = '3.4'
+    junitVersion = '4.12'
+}
+
+dependencies {
+    compile(
+            // spring 包
+            "org.springframework:spring-beans:$springVersion",
+            "org.springframework:spring-context:$springVersion",
+            "org.springframework:spring-orm:$springVersion",
+            "org.springframework:spring-context-support:$springVersion",
+            // mybatis 包
+            "org.mybatis:mybatis:$mybatisVersion",
+            "org.mybatis:mybatis-spring:$mybatisSpringVersion",
+            // aspectj 包
+            "org.aspectj:aspectjrt:$aspectjVersion",
+            "org.aspectj:aspectjweaver:$aspectjVersion",
+            // logback
+            "ch.qos.logback:logback-classic:$logbackVersion",
+            // 其他依赖包
+            "com.alibaba:druid:$druidVersion",
+            "mysql:mysql-connector-java:$mysqlConnectorVersion",
+            "javax.persistence:persistence-api:$jpaVersion",
+            "org.apache.commons:commons-lang3:$commonsLang3Version"
+    )
+
+    testCompile(
+            "junit:junit:$junitVersion",
+            "org.springframework:spring-test:$springVersion"
+    )
+}
+
+tasks.withType(JavaCompile){
+    options.encoding = "UTF-8"
+}

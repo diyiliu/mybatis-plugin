@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diyiliu.bll.dao.BaseMapper">
+
+    <insert id="insertEntity" useGeneratedKeys="true" keyProperty="id">
+        insert into (columns) values (values)
+    </insert>
+
+    <delete id="deleteEntity">
+        delete from table where id = (id)
+    </delete>
+
+    <update id="updateEntity">
+        update table set (fleids) where id = (id)
+    </update>
+
+    <select id="selectEntity">
+        select * from table
+    </select>
+
+    <delete id="batchDelete" statementType="STATEMENT">
+        DELETE
+          FROM ${table}
+        WHERE ${key} in
+        <foreach collection="keys" item="i" open="(" separator="," close=")">
+            '${i}'
+        </foreach>
+    </delete>
+
+    <select id="selectBySql" parameterType="String" resultType="Map">
+        ${sql}
+    </select>
+
+
+</mapper>
