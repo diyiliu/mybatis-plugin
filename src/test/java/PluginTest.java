@@ -10,6 +10,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Description: PluginTest
@@ -48,5 +49,20 @@ public class PluginTest {
         userService.delete(user);
 
         logger.debug("testInsert ... ok！");
+    }
+
+    @Test
+    public void testQuery(){
+        User user = new User();
+        user.setAge(22);
+        user.setOrderBy("id desc");
+
+        List<User> list = userService.select(user);
+
+        System.out.println(list.get(0).getName());
+
+        logger.info("数量：{}", list.size());
+
+        logger.debug("testQuery ... ok！");
     }
 }

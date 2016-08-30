@@ -4,7 +4,7 @@
 <mapper namespace="com.diyiliu.bll.dao.BaseMapper">
 
     <insert id="insertEntity" useGeneratedKeys="true" keyProperty="id">
-        insert into (columns) values (values)
+        insert into table(columns) values (values)
     </insert>
 
     <delete id="deleteEntity">

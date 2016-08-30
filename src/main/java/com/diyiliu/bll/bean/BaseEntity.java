@@ -16,6 +16,8 @@ import java.util.List;
 
 public class BaseEntity implements Serializable {
 
+    protected String orderBy;
+
     public HashMap toHashMap() {
 
         HashMap map = new HashMap();
@@ -91,5 +93,13 @@ public class BaseEntity implements Serializable {
         }
 
         return list;
+    }
+
+    public String getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
     }
 }

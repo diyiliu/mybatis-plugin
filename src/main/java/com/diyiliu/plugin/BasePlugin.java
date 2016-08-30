@@ -108,6 +108,19 @@ public class BasePlugin extends SPlugin {
         } else if (sqlId.equals(Constant.Crud.SELECT)) {
             strb = new StringBuilder("SELECT * FROM ");
             strb.append(table);
+            strb.append(" WHERE 1=1 ");
+            for (int n = 0; n < values.length; n++){
+                if (values[n] == null){
+                    continue;
+                }
+                String field = fields[n];
+                Object value = format(values[n], dialect);
+                strb.append(" AND ").append(field).append("=").append(value);
+            }
+            if (entity.getOrderBy() != null){
+                strb.append(" ORDER BY ").append(entity.getOrderBy());
+            }
+
             return strb.toString();
         }
 
