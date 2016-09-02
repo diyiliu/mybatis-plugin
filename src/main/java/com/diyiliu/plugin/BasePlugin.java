@@ -4,6 +4,7 @@ import com.diyiliu.bll.bean.BaseEntity;
 import com.diyiliu.other.Constant;
 import com.diyiliu.other.DateUtil;
 import com.diyiliu.plugin.abs.SPlugin;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -105,7 +106,7 @@ public class BasePlugin extends SPlugin {
             strb.append(" WHERE ").append(key).append("=").append(format(map.get(key), dialect));
 
             return strb.toString();
-        } else if (sqlId.equals(Constant.Crud.SELECT)) {
+        } else if (sqlId.equals(Constant.Crud.SELECT) || sqlId.equals(Constant.Crud.SELECT_LIST)) {
             strb = new StringBuilder("SELECT * FROM ");
             strb.append(table);
             strb.append(" WHERE 1=1 ");

@@ -20,7 +20,9 @@ public interface BaseService<T extends BaseEntity> {
 
     void update(T entity);
 
-    List<T> select(T entity);
+    T select(T entity);
+
+    List<T> selectForList(T entity);
 
     void batchDelete(String table, String key, String[] keys);
 

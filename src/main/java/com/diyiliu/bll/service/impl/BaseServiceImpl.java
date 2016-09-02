@@ -40,7 +40,18 @@ public class  BaseServiceImpl implements BaseService {
     }
 
     @Override
-    public List select(BaseEntity entity) {
+    public BaseEntity select(BaseEntity entity) {
+
+        List<BaseEntity> list = baseDao.selectEntity(entity);
+        if (list == null || list.size() < 1){
+            return null;
+        }
+
+        return list.get(0);
+    }
+
+    @Override
+    public List selectForList(BaseEntity entity) {
 
         return baseDao.selectEntity(entity);
     }

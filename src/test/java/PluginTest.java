@@ -57,11 +57,11 @@ public class PluginTest {
         user.setAge(22);
         user.setOrderBy("id desc");
 
-        List<User> list = userService.select(user);
-
-        System.out.println(list.get(0).getName());
+        List<User> list = userService.selectForList(user);
 
         logger.info("数量：{}", list.size());
+
+        System.out.println( userService.select(user));
 
         logger.debug("testQuery ... ok！");
     }

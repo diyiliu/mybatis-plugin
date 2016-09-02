@@ -3,6 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.diyiliu.bll.dao.BaseMapper">
 
+
     <insert id="insertEntity" useGeneratedKeys="true" keyProperty="id">
         insert into table(columns) values (values)
     </insert>
