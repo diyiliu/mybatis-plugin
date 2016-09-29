@@ -31,7 +31,7 @@ public class PluginTest {
     private BaseService userService;
 
     @Test
-    public void testInsert(){
+    public void testInsert() {
 
         User user = new User("测试", 22);
 
@@ -42,9 +42,9 @@ public class PluginTest {
     }
 
     @Test
-    public void testDelete(){
+    public void testDelete() {
         User user = new User();
-        user.setId(22);
+        user.setId(21);
 
         userService.delete(user);
 
@@ -52,17 +52,25 @@ public class PluginTest {
     }
 
     @Test
-    public void testQuery(){
+    public void testQuery() {
         User user = new User();
-        user.setAge(22);
+        user.setId(20);
         user.setOrderBy("id desc");
 
         List<User> list = userService.selectForList(user);
 
         logger.info("数量：{}", list.size());
 
-        System.out.println( userService.select(user));
+        User u = (User) userService.select(user);
+        System.out.println(u.getName());
 
         logger.debug("testQuery ... ok！");
+    }
+
+    @Test
+    public void testCriteria(){
+        User user = new User();
+
+        user.setWhere(null, "id", "a");
     }
 }

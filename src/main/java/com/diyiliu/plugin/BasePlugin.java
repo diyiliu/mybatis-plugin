@@ -2,9 +2,9 @@ package com.diyiliu.plugin;
 
 import com.diyiliu.bll.bean.BaseEntity;
 import com.diyiliu.other.Constant;
+import com.diyiliu.other.Criteria;
 import com.diyiliu.other.DateUtil;
 import com.diyiliu.plugin.abs.SPlugin;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -15,10 +15,7 @@ import org.apache.ibatis.plugin.Signature;
 
 import javax.persistence.Table;
 import java.sql.Connection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Description: BasePlugin
@@ -110,15 +107,20 @@ public class BasePlugin extends SPlugin {
             strb = new StringBuilder("SELECT * FROM ");
             strb.append(table);
             strb.append(" WHERE 1=1 ");
-            for (int n = 0; n < values.length; n++){
-                if (values[n] == null){
+            for (int n = 0; n < values.length; n++) {
+                if (values[n] == null) {
                     continue;
                 }
                 String field = fields[n];
                 Object value = format(values[n], dialect);
                 strb.append(" AND ").append(field).append("=").append(value);
             }
-            if (entity.getOrderBy() != null){
+
+            if (entity.getCriList().size() > 0) {
+                strb.append(joinCriteria(entity.getCriList()));
+            }
+
+            if (entity.getOrderBy() != null) {
                 strb.append(" ORDER BY ").append(entity.getOrderBy());
             }
 
@@ -127,6 +129,41 @@ public class BasePlugin extends SPlugin {
 
         return null;
     }
+
+    private String joinCriteria(List<Criteria> list) {
+
+        StringBuilder strb = new StringBuilder();
+        for (Criteria c : list) {
+
+            switch (c.getSymbol()) {
+                case Constant.QBuilder.EQUAL:
+                    strb.append(" AND ").append(c.getKey()).append("=").append(format(c.getValue()[0], dialect));
+                    break;
+                case Constant.QBuilder.NOT_EQUAL:
+                    strb.append(" AND ").append(c.getKey()).append("<>").append(format(c.getValue()[0], dialect));
+                    break;
+                case Constant.QBuilder.GREATER:
+                    strb.append(" AND ").append(c.getKey()).append(">").append(format(c.getValue()[0], dialect));
+                    break;
+                case Constant.QBuilder.GREATER_OR_EQUAL:
+                    strb.append(" AND ").append(c.getKey()).append(">=").append(format(c.getValue()[0], dialect));
+                    break;
+                case Constant.QBuilder.LESS:
+                    strb.append(" AND ").append(c.getKey()).append("<").append(format(c.getValue()[0], dialect));
+                    break;
+                case Constant.QBuilder.LESS_OR_EQUAL:
+                    strb.append(" AND ").append(c.getKey()).append("<=").append(format(c.getValue()[0], dialect));
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+
+        return strb.toString();
+    }
+
 
     private Object format(Object value, String dialect) {
 

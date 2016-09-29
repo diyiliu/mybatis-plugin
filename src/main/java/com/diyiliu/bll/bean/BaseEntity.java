@@ -1,5 +1,7 @@
 package com.diyiliu.bll.bean;
 
+import com.diyiliu.other.Criteria;
+
 import javax.persistence.Column;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -65,8 +67,9 @@ public class BaseEntity implements Serializable {
             while (resultSet.next()) {
                 Object obj = this.getClass().newInstance();
                 for (Field field : fields) {
+                    Column columnField = field.getAnnotation(Column.class);
+
                     if (field.isAccessible()) {
-                        Column columnField = field.getAnnotation(Column.class);
                         if (columnField != null) {
                             column = columnField.name();
                             value = resultSet.getObject(column);
@@ -75,14 +78,12 @@ public class BaseEntity implements Serializable {
                         }
                     } else {
                         field.setAccessible(true);
-                        Column columnField = field.getAnnotation(Column.class);
                         if (columnField != null) {
                             column = columnField.name();
                             value = resultSet.getObject(column);
 
                             field.set(obj, value);
                         }
-
                         field.setAccessible(false);
                     }
                 }
@@ -102,4 +103,35 @@ public class BaseEntity implements Serializable {
     public void setOrderBy(String orderBy) {
         this.orderBy = orderBy;
     }
+
+
+    private List<Criteria> criList = new ArrayList<Criteria>();
+
+    public List<Criteria> getCriList() {
+        return criList;
+    }
+
+    public void setWhere(String symbol, String field, Object... value) {
+
+        try {
+            Field f = this.getClass().getDeclaredField(field);
+            Column c = f.getAnnotation(Column.class);
+
+            criList.add(new Criteria(symbol, c.name(), value));
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void setWhere(boolean region, String symbol, String field, Object... value) {
+
+        if (region) {
+            criList.add(new Criteria(symbol, field, value));
+        } else {
+            setWhere(symbol, field, value);
+        }
+    }
+
+
 }
