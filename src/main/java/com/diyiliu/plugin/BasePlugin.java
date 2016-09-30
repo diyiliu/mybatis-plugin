@@ -210,7 +210,7 @@ public class BasePlugin extends SPlugin {
             }
         }else {
 
-            return value.toString();
+            return value == null? null: value.toString();
         }
 
         return sbd.toString();
