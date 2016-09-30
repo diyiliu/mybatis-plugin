@@ -55,7 +55,6 @@ public class PluginTest {
     public void testQuery() {
         User user = new User();
         user.setId(20);
-        user.setOrderBy("id desc");
 
         List<User> list = userService.selectForList(user);
 
@@ -71,6 +70,6 @@ public class PluginTest {
     public void testCriteria(){
         User user = new User();
 
-        user.setWhere(null, "id", "a");
+        user.setWhere(null, "id", "a").setWhere(null, "name", null);
     }
 }

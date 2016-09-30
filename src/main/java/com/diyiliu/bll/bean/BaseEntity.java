@@ -16,9 +16,7 @@ import java.util.List;
  * Update: 2016-08-19 15:29
  */
 
-public class BaseEntity implements Serializable {
-
-    protected String orderBy;
+public class BaseEntity<T extends BaseEntity> implements Serializable {
 
     public HashMap toHashMap() {
 
@@ -96,42 +94,56 @@ public class BaseEntity implements Serializable {
         return list;
     }
 
-    public String getOrderBy() {
-        return orderBy;
-    }
-
-    public void setOrderBy(String orderBy) {
-        this.orderBy = orderBy;
-    }
-
-
     private List<Criteria> criList = new ArrayList<Criteria>();
 
     public List<Criteria> getCriList() {
         return criList;
     }
 
-    public void setWhere(String symbol, String field, Object... value) {
+    public T setWhere(String symbol, String field, Object... value) {
+
+        criList.add(new Criteria(symbol, fetchColumn(field), value));
+
+        return (T) this;
+    }
+
+    public T setWhere(boolean region, String symbol, String field, Object... value) {
+
+        if (region) {
+            field = fetchColumn(field);
+        }
+
+        setWhere(symbol, field, value);
+
+        return (T) this;
+    }
+
+    public T setWhere(boolean or, boolean region, String symbol, String field, Object... value) {
+
+        if (region) {
+            field = fetchColumn(field);
+        }
+
+        Criteria c = new Criteria(symbol, field, value);
+        if (or) {
+            c.setOr(true);
+        }
+        criList.add(c);
+
+        return (T) this;
+    }
+
+    private String fetchColumn(String field) {
 
         try {
             Field f = this.getClass().getDeclaredField(field);
             Column c = f.getAnnotation(Column.class);
 
-            criList.add(new Criteria(symbol, c.name(), value));
+            return c.name();
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
 
+        return null;
     }
-
-    public void setWhere(boolean region, String symbol, String field, Object... value) {
-
-        if (region) {
-            criList.add(new Criteria(symbol, field, value));
-        } else {
-            setWhere(symbol, field, value);
-        }
-    }
-
-
 }

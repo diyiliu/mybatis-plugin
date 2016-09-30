@@ -6,24 +6,33 @@ package com.diyiliu.other;
  * Update: 2016-09-29 09:13
  */
 
-public class Criteria {
+public class Criteria<T> {
 
     private String symbol;
     private String key;
-    private Object[] value;
+    private T[] value;
+
+    private Boolean or = Boolean.FALSE;
 
     public Criteria() {
     }
 
-    public Criteria(String key, Object[] value) {
+    public Criteria(String key, T[] value) {
         this.key = key;
         this.value = value;
     }
 
-    public Criteria(String symbol, String key, Object[] value) {
+    public Criteria(String symbol, String key, T[] value) {
         this.symbol = symbol;
         this.key = key;
         this.value = value;
+    }
+
+    public Criteria(String symbol, String key, T[] value, Boolean or) {
+        this.symbol = symbol;
+        this.key = key;
+        this.value = value;
+        this.or = or;
     }
 
     public String getSymbol() {
@@ -42,11 +51,19 @@ public class Criteria {
         this.key = key;
     }
 
-    public Object[] getValue() {
+    public T[] getValue() {
         return value;
     }
 
-    public void setValue(Object[] value) {
+    public void setValue(T[] value) {
         this.value = value;
+    }
+
+    public Boolean getOr() {
+        return or;
+    }
+
+    public void setOr(Boolean or) {
+        this.or = or;
     }
 }

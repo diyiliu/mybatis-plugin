@@ -52,7 +52,6 @@ public class BasePlugin extends SPlugin {
 
     public String joinSql(String sqlId, BaseEntity entity) {
 
-
         Table tableField = entity.getClass().getAnnotation(Table.class);
         String table = tableField.name();
         String key = tableField.schema();
@@ -69,62 +68,58 @@ public class BasePlugin extends SPlugin {
             i++;
         }
 
-        StringBuilder strb;
+        StringBuilder sbd;
         if (sqlId.equals(Constant.Crud.INSERT)) {
 
-            strb = new StringBuilder("INSERT INTO ");
-            strb.append(table).append("(");
+            sbd = new StringBuilder("INSERT INTO ");
+            sbd.append(table).append("(");
             for (String field : fields) {
-                strb.append(field).append(",");
+                sbd.append(field).append(",");
             }
-            strb = strb.replace(strb.length() - 1, strb.length(), ")");
-            strb.append("VALUES(");
+            sbd = sbd.replace(sbd.length() - 1, sbd.length(), ")");
+            sbd.append("VALUES(");
             for (Object value : values) {
-                strb.append(format(value, dialect)).append(",");
+                sbd.append(format(value)).append(",");
             }
-            strb = strb.replace(strb.length() - 1, strb.length(), ")");
+            sbd = sbd.replace(sbd.length() - 1, sbd.length(), ")");
 
-            return strb.toString();
+            return sbd.toString();
         } else if (sqlId.equals(Constant.Crud.DELETE)) {
 
-            strb = new StringBuilder("DELETE FROM ");
-            strb.append(table).append(" WHERE ").append(key).append("=").append(format(map.get(key), dialect));
+            sbd = new StringBuilder("DELETE FROM ");
+            sbd.append(table).append(" WHERE ").append(key).append("=").append(format(map.get(key)));
 
-            return strb.toString();
+            return sbd.toString();
         } else if (sqlId.equals(Constant.Crud.UPDATE)) {
 
-            strb = new StringBuilder("UPDATE ");
-            strb.append(table).append(" SET ");
+            sbd = new StringBuilder("UPDATE ");
+            sbd.append(table).append(" SET ");
             for (String field : fields) {
-                strb.append(field).append("=").append(format(map.get(field), dialect)).append(", ");
+                sbd.append(field).append("=").append(format(map.get(field))).append(", ");
             }
-            int index = strb.lastIndexOf(",");
-            strb.replace(index, index + 1, "");
-            strb.append(" WHERE ").append(key).append("=").append(format(map.get(key), dialect));
+            int index = sbd.lastIndexOf(",");
+            sbd.replace(index, index + 1, "");
+            sbd.append(" WHERE ").append(key).append("=").append(format(map.get(key)));
 
-            return strb.toString();
+            return sbd.toString();
         } else if (sqlId.equals(Constant.Crud.SELECT) || sqlId.equals(Constant.Crud.SELECT_LIST)) {
-            strb = new StringBuilder("SELECT * FROM ");
-            strb.append(table);
-            strb.append(" WHERE 1=1 ");
+            sbd = new StringBuilder("SELECT * FROM ");
+            sbd.append(table);
+            sbd.append(" WHERE 1=1 ");
             for (int n = 0; n < values.length; n++) {
                 if (values[n] == null) {
                     continue;
                 }
                 String field = fields[n];
-                Object value = format(values[n], dialect);
-                strb.append(" AND ").append(field).append("=").append(value);
+                Object value = format(values[n]);
+                sbd.append(" AND ").append(field).append("=").append(value);
             }
 
             if (entity.getCriList().size() > 0) {
-                strb.append(joinCriteria(entity.getCriList()));
+                sbd.append(joinCriteria(entity.getCriList()));
             }
 
-            if (entity.getOrderBy() != null) {
-                strb.append(" ORDER BY ").append(entity.getOrderBy());
-            }
-
-            return strb.toString();
+            return sbd.toString();
         }
 
         return null;
@@ -132,56 +127,93 @@ public class BasePlugin extends SPlugin {
 
     private String joinCriteria(List<Criteria> list) {
 
-        StringBuilder strb = new StringBuilder();
+        Criteria order = null;
+
+        StringBuilder sbd = new StringBuilder();
         for (Criteria c : list) {
 
+            String link = c.getOr() ? " OR " : " AND ";
             switch (c.getSymbol()) {
                 case Constant.QBuilder.EQUAL:
-                    strb.append(" AND ").append(c.getKey()).append("=").append(format(c.getValue()[0], dialect));
+                    sbd.append(link).append(c.getKey()).append("=").append(format(c.getValue()[0]));
                     break;
                 case Constant.QBuilder.NOT_EQUAL:
-                    strb.append(" AND ").append(c.getKey()).append("<>").append(format(c.getValue()[0], dialect));
+                    sbd.append(link).append(c.getKey()).append("<>").append(format(c.getValue()[0]));
                     break;
                 case Constant.QBuilder.GREATER:
-                    strb.append(" AND ").append(c.getKey()).append(">").append(format(c.getValue()[0], dialect));
+                    sbd.append(link).append(c.getKey()).append(">").append(format(c.getValue()[0]));
                     break;
                 case Constant.QBuilder.GREATER_OR_EQUAL:
-                    strb.append(" AND ").append(c.getKey()).append(">=").append(format(c.getValue()[0], dialect));
+                    sbd.append(link).append(c.getKey()).append(">=").append(format(c.getValue()[0]));
                     break;
                 case Constant.QBuilder.LESS:
-                    strb.append(" AND ").append(c.getKey()).append("<").append(format(c.getValue()[0], dialect));
+                    sbd.append(link).append(c.getKey()).append("<").append(format(c.getValue()[0]));
                     break;
                 case Constant.QBuilder.LESS_OR_EQUAL:
-                    strb.append(" AND ").append(c.getKey()).append("<=").append(format(c.getValue()[0], dialect));
+                    sbd.append(link).append(c.getKey()).append("<=").append(format(c.getValue()[0]));
+                    break;
+                case Constant.QBuilder.IN:
+                    sbd.append(link).append(c.getKey()).append(" IN ").append(format(c.getValue(), "(", ")", ","));
+                    break;
+                case Constant.QBuilder.NOT_IN:
+                    sbd.append(link).append(c.getKey()).append(" NOT IN ").append(format(c.getValue(), "(", ")", ","));
+                    break;
+                case Constant.QBuilder.RECURSIVE:
+                    sbd.append(link).append("( 1=1 ").append(joinCriteria(Arrays.asList((Criteria[]) c.getValue()))).append(")");
+                    break;
+                case Constant.QBuilder.ORDER_BY:
+                    order = c;
                     break;
                 default:
                     break;
             }
-
         }
 
+        if (order != null) {
+            StringBuilder builder = new StringBuilder();
+            for (Object o: order.getValue()){
+                builder.append(o).append(",");
+            }
+            sbd.append(builder.substring(0, builder.length() - 1));
+        }
 
-        return strb.toString();
+        return sbd.toString();
+    }
+
+    private String format(Object[] value, String prefix, String suffix, String split) {
+
+        StringBuilder sbd = new StringBuilder(prefix);
+
+        for (Object obj : value) {
+
+            sbd.append(format(obj)).append(split);
+        }
+
+        return sbd.substring(0, sbd.length() - 1) + suffix;
     }
 
 
-    private Object format(Object value, String dialect) {
+    private String format(Object value) {
 
+        StringBuilder sbd = new StringBuilder();
         if (value instanceof String) {
 
-            value = "'" + value + "'";
+            sbd.append("'").append(value).append("'");
         } else if (value instanceof Date) {
 
             if (dialect.equals("mysql")) {
 
-                value = "date_format('" + DateUtil.dateToString((Date) value) + "' , '%Y-%m-%d %H:%i:%s')";
+                sbd.append("date_format('").append(DateUtil.dateToString((Date) value)).append("' , '%Y-%m-%d %H:%i:%s')");
             } else if (dialect.equals("oracle")) {
 
-                value = "to_date('" + DateUtil.dateToString((Date) value) + "' , 'yyyy-mm-dd hh24:mi:ss')";
+                sbd.append("to_date('").append(DateUtil.dateToString((Date) value)).append("' , 'yyyy-mm-dd hh24:mi:ss')");
             }
+        }else {
+
+            return value.toString();
         }
 
-        return value;
+        return sbd.toString();
     }
 
 

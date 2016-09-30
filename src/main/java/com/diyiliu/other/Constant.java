@@ -40,5 +40,10 @@ public class Constant {
         public final static String LESS_OR_EQUAL = "lessOrEqual";
         public final static String IN = "in";
         public final static String NOT_IN = "notIn";
+        public final static String ORDER_BY = "orderBy";
+        // 递归 value
+        public final static String RECURSIVE = "recursive";
+        public final static String AUTO = "auto";
+
     }
 }
