@@ -102,7 +102,7 @@ public class BaseEntity<T extends BaseEntity> implements Serializable {
 
     public T setWhere(String symbol, String field, Object... value) {
 
-        criList.add(new Criteria(symbol, fetchColumn(field), value));
+        criList.add(new Criteria(symbol, field, value));
 
         return (T) this;
     }

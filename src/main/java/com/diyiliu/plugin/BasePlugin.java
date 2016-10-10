@@ -174,7 +174,7 @@ public class BasePlugin extends SPlugin {
             for (Object o: order.getValue()){
                 builder.append(o).append(",");
             }
-            sbd.append(builder.substring(0, builder.length() - 1));
+            sbd.append(" ORDER BY ").append(builder.substring(0, builder.length() - 1));
         }
 
         return sbd.toString();

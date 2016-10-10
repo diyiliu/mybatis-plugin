@@ -1,6 +1,7 @@
 import com.diyiliu.bean.User;
 import com.diyiliu.bll.service.BaseService;
 import com.diyiliu.dao.UserDao;
+import com.diyiliu.other.Constant;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -54,14 +55,15 @@ public class PluginTest {
     @Test
     public void testQuery() {
         User user = new User();
-        user.setId(20);
+        user.setWhere(false, Constant.QBuilder.ORDER_BY, null, "ID DESC");
+        //user.setId(20);
 
         List<User> list = userService.selectForList(user);
 
         logger.info("数量：{}", list.size());
 
-        User u = (User) userService.select(user);
-        System.out.println(u.getName());
+/*        User u = (User) userService.select(user);
+        System.out.println(u.getName());*/
 
         logger.debug("testQuery ... ok！");
     }
