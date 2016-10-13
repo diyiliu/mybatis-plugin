@@ -120,7 +120,7 @@ public class BaseEntity<T extends BaseEntity> implements Serializable {
 
     public T setWhere(String symbol, String field, Object... value) {
 
-        criList.add(new Criteria(symbol, field, value));
+        criList.add(new Criteria(symbol, fetchColumn(field), value));
 
         return (T) this;
     }
@@ -128,10 +128,10 @@ public class BaseEntity<T extends BaseEntity> implements Serializable {
     public T setWhere(boolean region, String symbol, String field, Object... value) {
 
         if (region) {
-            field = fetchColumn(field);
+            setWhere(symbol, field, value);
         }
 
-        setWhere(symbol, field, value);
+        criList.add(new Criteria(symbol, field, value));
 
         return (T) this;
     }
@@ -153,13 +153,15 @@ public class BaseEntity<T extends BaseEntity> implements Serializable {
 
     private String fetchColumn(String field) {
 
-        try {
-            Field f = this.getClass().getDeclaredField(field);
-            Column c = f.getAnnotation(Column.class);
+        if (field != null) {
+            try {
+                Field f = this.getClass().getDeclaredField(field);
+                Column c = f.getAnnotation(Column.class);
 
-            return c.name();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+                return c.name();
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
         }
 
         return null;
