@@ -99,21 +99,17 @@ public class BasePlugin extends SPlugin {
             }
             int index = sbd.lastIndexOf(",");
             sbd.replace(index, index + 1, "");
-            sbd.append(" WHERE ").append(key).append("=").append(format(map.get(key)));
+            sbd.append(" WHERE 1=1 ");
+
+            if (entity.getCriList().size() > 0) {
+                sbd.append(joinCriteria(entity.getCriList()));
+            }
 
             return sbd.toString();
         } else if (sqlId.equals(Constant.Crud.SELECT) || sqlId.equals(Constant.Crud.SELECT_LIST)) {
             sbd = new StringBuilder("SELECT * FROM ");
             sbd.append(table);
             sbd.append(" WHERE 1=1 ");
-            for (int n = 0; n < values.length; n++) {
-                if (values[n] == null) {
-                    continue;
-                }
-                String field = fields[n];
-                Object value = format(values[n]);
-                sbd.append(" AND ").append(field).append("=").append(value);
-            }
 
             if (entity.getCriList().size() > 0) {
                 sbd.append(joinCriteria(entity.getCriList()));

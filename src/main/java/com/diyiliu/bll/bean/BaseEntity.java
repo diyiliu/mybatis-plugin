@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,22 +67,21 @@ public class BaseEntity<T extends BaseEntity> implements Serializable {
                 Object obj = this.getClass().newInstance();
                 for (Field field : fields) {
                     Column columnField = field.getAnnotation(Column.class);
+                    if (columnField == null) {
+                        continue;
+                    }
+                    column = columnField.name();
+                    value = formatResultSet(field, column, resultSet);
 
                     if (field.isAccessible()) {
-                        if (columnField != null) {
-                            column = columnField.name();
-                            value = resultSet.getObject(column);
 
-                            field.set(obj, value);
-                        }
+                        field.set(obj, value);
                     } else {
-                        field.setAccessible(true);
-                        if (columnField != null) {
-                            column = columnField.name();
-                            value = resultSet.getObject(column);
 
-                            field.set(obj, value);
-                        }
+                        field.setAccessible(true);
+
+                        field.set(obj, value);
+
                         field.setAccessible(false);
                     }
                 }
@@ -92,6 +92,24 @@ public class BaseEntity<T extends BaseEntity> implements Serializable {
         }
 
         return list;
+    }
+
+    private Object formatResultSet(Field field, String column, ResultSet resultSet) {
+
+        String fieldType = field.getType().getTypeName();
+
+        Object result = null;
+        try {
+            if (fieldType.contains("int") || fieldType.contains("Integer")) {
+                result = resultSet.getInt(column);
+            } else {
+                result = resultSet.getObject(column);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     private List<Criteria> criList = new ArrayList<Criteria>();

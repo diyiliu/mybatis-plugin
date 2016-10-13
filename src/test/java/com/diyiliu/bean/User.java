@@ -19,7 +19,7 @@ public class User extends BaseEntity {
     @Column(name = "NAME")
     private String name;
     @Column(name = "AGE")
-    private Integer age;
+    private int age;
 
     public User() {
     }
