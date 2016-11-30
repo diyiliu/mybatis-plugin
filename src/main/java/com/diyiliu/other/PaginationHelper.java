@@ -9,12 +9,12 @@ public class PaginationHelper {
 
     private static ThreadLocal<Pagination> LOCAL_PAGINATION = new ThreadLocal<Pagination>();
 
-    public static void page(int offset, int limit){
+    public static void page(int page, int limit){
         Pagination pagination = LOCAL_PAGINATION.get();
         if (pagination == null){
             pagination = new Pagination();
         }
-        pagination.setOffset(offset);
+        pagination.setOffset(page * limit);
         pagination.setLimit(limit);
 
         LOCAL_PAGINATION.set(pagination);

@@ -18,10 +18,14 @@ compileTestJava {
 repositories {
     //本地仓库中心
     mavenLocal()
-    //公共仓库
+    //局域网仓库
     maven {
         url "http://192.168.0.191:9080/repository/maven-central/"
     }
+    //JCenter中央仓库
+    jcenter()
+    //Maven中央仓库
+    mavenCentral()
 }
 
 ext {
