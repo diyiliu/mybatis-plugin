@@ -41,7 +41,7 @@ public class PaginationPlugin extends SPlugin {
 
         String sqlId = mappedStatement.getId().substring(mappedStatement.getId().lastIndexOf(".") + 1);
 
-        Pagination pagination = PaginationHelper.getPage();
+        Pagination pagination = PaginationHelper.getPagination();
         if (sqlId.matches(pageSqlId) &&
                 pagination != null && dialect != null) {
             logger.info("Mybatis 分页插件...");
