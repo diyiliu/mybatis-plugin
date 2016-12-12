@@ -132,11 +132,10 @@ public class BaseEntity<T extends BaseEntity> implements Serializable {
     public T setWhere(boolean region, String symbol, String field, Object... value) {
 
         if (region) {
-            setWhere(symbol, field, value);
-        } else {
-            criList.add(new Criteria(symbol, field, value));
+           return setWhere(symbol, field, value);
         }
 
+        criList.add(new Criteria(symbol, field, value));
 
         return (T) this;
     }
