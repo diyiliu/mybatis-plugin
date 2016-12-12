@@ -25,8 +25,8 @@ public class BaseEntity<T extends BaseEntity> implements Serializable {
         try {
             Field[] fields = this.getClass().getDeclaredFields();
 
-            String column;
-            Object value;
+            String column = "";
+            Object value = null;
             for (Field field : fields) {
 
                 if (field.isAccessible()) {
@@ -48,6 +48,10 @@ public class BaseEntity<T extends BaseEntity> implements Serializable {
                     }
 
                     field.setAccessible(false);
+                }
+
+                if (nonNull && value == null && map.containsKey(column)){
+                    map.remove(column);
                 }
             }
         } catch (IllegalAccessException e) {
@@ -129,9 +133,10 @@ public class BaseEntity<T extends BaseEntity> implements Serializable {
 
         if (region) {
             setWhere(symbol, field, value);
+        } else {
+            criList.add(new Criteria(symbol, field, value));
         }
 
-        criList.add(new Criteria(symbol, field, value));
 
         return (T) this;
     }
@@ -165,5 +170,12 @@ public class BaseEntity<T extends BaseEntity> implements Serializable {
         }
 
         return null;
+    }
+
+    // 非空
+    private boolean nonNull = Boolean.FALSE;
+
+    public void setNonNull(boolean nonNull) {
+        this.nonNull = nonNull;
     }
 }
